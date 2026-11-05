@@ -1,6 +1,6 @@
 services:
   9router:
-    image: ghcr.io/newnol/9router-wolfi:latest
+    image: ghcr.io/newnol/9router-wolfi:0.4.41
     init: true
     restart: unless-stopped
     ports:

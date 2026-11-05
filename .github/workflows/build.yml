@@ -2,11 +2,10 @@ name: Build and publish Wolfi image
 
 on:
   push:
-    branches: [main]
+    branches: [0.4.41]
   pull_request:
   workflow_dispatch:
-  schedule:
-    - cron: '23 3 * * 1'
+
 
 permissions:
   contents: read
@@ -30,7 +29,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: decolua/9router
-          ref: 1fe586bb1cf35e1ed0cb2150a8ef7d1db040b21d
+          ref: cebc72e3438dca5aad69b2828cb0d0f2e54b168d
           path: upstream
           persist-credentials: false
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
@@ -58,7 +57,7 @@ jobs:
           ATTEMPT: ${{ github.run_attempt }}
         run: |
           image="ghcr.io/${REPOSITORY,,}"
-          for tag in latest "sha-${REVISION}" "run-${RUN_ID}-${ATTEMPT}"; do
+          for tag in 0.4.41 "sha-${REVISION}" "run-${RUN_ID}-${ATTEMPT}"; do
             docker tag 9router-wolfi:ci "$image:$tag"
             docker push "$image:$tag"
           done
