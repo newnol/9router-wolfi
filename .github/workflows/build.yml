@@ -1,0 +1,67 @@
+name: Build and publish Wolfi image
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 3 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Checkout pinned upstream
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: decolua/9router
+          ref: 1fe586bb1cf35e1ed0cb2150a8ef7d1db040b21d
+          path: upstream
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build image
+        run: |
+          docker buildx build --load --tag 9router-wolfi:ci \
+            --file Dockerfile \
+            --label org.opencontainers.image.source=https://github.com/${{ github.repository }} \
+            --cache-from type=gha --cache-to type=gha,mode=max upstream
+      - name: Smoke test exact image
+        run: bash smoke-test.sh 9router-wolfi:ci
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish tested image
+        if: github.event_name != 'pull_request'
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REVISION: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          image="ghcr.io/${REPOSITORY,,}"
+          for tag in latest "sha-${REVISION}" "run-${RUN_ID}-${ATTEMPT}"; do
+            docker tag 9router-wolfi:ci "$image:$tag"
+            docker push "$image:$tag"
+          done
+      - name: Container logs
+        if: always()
+        run: docker logs 9router-smoke 2>&1 || true

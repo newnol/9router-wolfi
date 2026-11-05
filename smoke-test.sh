@@ -26,6 +26,7 @@ for (const dir of ["/app/data", "/app/data-home"]) {
 }
 console.log("Native modules, non-root user and data permissions: OK");'
 docker restart 9router-smoke
+port=$(docker port 9router-smoke 20128/tcp)
 ready=false
 for attempt in {1..60}; do
   if curl -fsS "http://$port/api/health"; then ready=true; break; fi
