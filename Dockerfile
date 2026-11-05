@@ -33,7 +33,7 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/open-sse ./open-sse
 COPY --from=builder /app/src/mitm ./src/mitm
 COPY --from=builder /app/node_modules/node-forge ./node_modules/node-forge
-COPY --from=builder /app/node_modules/next ./node_modules/next
+
 COPY --from=builder /app/node_modules/sql.js ./node_modules/sql.js
 COPY --from=builder /app/node_modules/node-machine-id ./node_modules/node-machine-id
 COPY --from=builder /opt/lazy-runtime/node_modules/. ./node_modules/

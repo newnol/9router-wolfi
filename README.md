@@ -51,6 +51,13 @@ bash smoke-test.sh 9router-wolfi:local
 - Grype scans the exact image before publication and saves a JSON report as a
   workflow artifact. Vulnerability findings do not block publication; scanner
   errors do. The report includes fixed and unfixed findings.
+- Docker build summaries show duration and cache utilization for both the Wolfi
+  build and the pinned upstream Dockerfile, rebuilt for linux/amd64 on the same
+  runner with separate caches. The job summary compares unpacked local image
+  sizes. These are not historical upstream build times or compressed registry
+  sizes; cache state and build order can affect timings. The upstream release
+  run is https://github.com/decolua/9router/actions/runs/25841384476 (the
+  original release built both amd64 and arm64; its logs have expired).
 - Rebuilds refresh OS/npm dependency resolution, not upstream source or
   the pinned Wolfi base digest. Update the upstream ref, Dockerfile labels and
   README together to change the application version.
