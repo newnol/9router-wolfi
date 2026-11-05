@@ -47,7 +47,10 @@ bash smoke-test.sh 9router-wolfi:local
   use the run tag or registry digest for a specific build.
 - Smoke checks cover HTTP health, dashboard response, native module loading,
   non-root permissions and restart persistence, not live provider calls or
-  browser automation. No vulnerability scan is currently configured.
+  browser automation.
+- Grype scans the exact image before publication and saves a JSON report as a
+  workflow artifact. Vulnerability findings do not block publication; scanner
+  errors do. The report includes fixed and unfixed findings.
 - Rebuilds refresh OS/npm dependency resolution, not upstream source or
   the pinned Wolfi base digest. Update the upstream ref, Dockerfile labels and
   README together to change the application version.

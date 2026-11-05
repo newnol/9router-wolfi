@@ -41,6 +41,19 @@ jobs:
             --cache-from type=gha --cache-to type=gha,mode=max upstream
       - name: Smoke test exact image
         run: bash smoke-test.sh 9router-wolfi:ci
+      - name: Scan image with Grype
+        uses: anchore/scan-action@27805bf3b4e84b4a5c980df22ed233c00390a439 # v7.4.2
+        with:
+          image: 9router-wolfi:ci
+          fail-build: false
+          output-format: json
+          output-file: grype-results.json
+      - name: Upload Grype report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: grype-results
+          path: grype-results.json
+          if-no-files-found: error
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'
         uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
