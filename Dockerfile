@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # Build context: decolua/9router at 1fe586bb1cf35e1ed0cb2150a8ef7d1db040b21d
-FROM cgr.dev/chainguard/wolfi-base@sha256:771146c2dfc880902a185f060c3db5571473c46b267edd98c3119c83068dfb61 AS base
+FROM cgr.dev/chainguard/wolfi-base@sha256:24f549a7fcace88e69b9557941168c74645688ecc4acf7fb6d734a6b74e9019d AS base
 RUN apk add --no-cache nodejs-22
 WORKDIR /app
 
